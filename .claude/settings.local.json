@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet new:*)",
+      "Bash(where:*)",
+      "Bash(dotnet:*)",
+      "Bash(dotnet --list-sdks:*)",
+      "Bash(echo:*)",
+      "Bash(\"/c/Program Files/dotnet/dotnet.exe\" --version)",
+      "Bash(cmd.exe /c \"dotnet --version\")",
+      "Bash(cmd.exe /c \"dotnet --list-sdks\")",
+      "Bash(powershell.exe -Command \"dotnet --version; dotnet --list-sdks\")",
+      "Bash(powershell.exe:*)",
+      "Bash(python3:*)",
+      "Bash(git add:*)",
+      "Bash(git rm:*)"
+    ]
+  }
+}
