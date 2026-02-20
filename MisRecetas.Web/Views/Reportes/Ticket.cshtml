@@ -12,7 +12,7 @@
     <form asp-action="Ticket" method="get" class="row g-2 align-items-end">
         <div class="col-md-4">
             <label class="form-label small mb-1">Nro. Receta</label>
-            <input name="nroReceta" value="@Model.NroReceta" class="form-control form-control-sm" placeholder="Numero de receta..." />
+            <input name="nro" value="@Model.NroReceta" class="form-control form-control-sm" placeholder="Numero de receta..." type="number" min="1" />
         </div>
         <div class="col-md-3"><button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-search me-1"></i>Buscar</button></div>
     </form>

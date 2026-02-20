@@ -69,6 +69,11 @@ public class RecetasController : Controller
     [ValidateAntiForgeryToken]
     public IActionResult BuscarPaciente(RegistrarRecetaViewModel vm)
     {
+        // Limpiar errores de campos del paso 2 que no aplican aquí
+        foreach (var key in new[] { nameof(vm.NombrePaciente), nameof(vm.ApellidoPaciente),
+                                    nameof(vm.EmailPaciente), nameof(vm.IdMedico), nameof(vm.NroReceta) })
+            ModelState.Remove(key);
+
         if (vm.IdTipoDocumento == 0 || string.IsNullOrWhiteSpace(vm.NroDocumento))
         {
             ModelState.AddModelError("", "Seleccione un tipo de documento e ingrese el número.");
@@ -143,6 +148,7 @@ public class RecetasController : Controller
         _recetaService.Registrar(vm.NroReceta, vm.IdMedico, idPaciente, GetCurrentUserId());
 
         TempData["Success"] = $"Receta Nro. {vm.NroReceta} registrada correctamente.";
+        TempData["NroRecetaRegistrada"] = vm.NroReceta;
         return RedirectToAction(nameof(Registrar));
     }
 

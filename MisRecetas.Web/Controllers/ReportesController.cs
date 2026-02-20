@@ -30,15 +30,16 @@ public class ReportesController : Controller
     [HttpGet]
     public IActionResult Ticket(int? nro = null)
     {
-        if (nro is null) return View((object?)null);
+        var vm = new ReporteViewModel { NroReceta = nro?.ToString() };
 
+        if (nro is null) return View(vm);
+
+        vm.BusquedaRealizada = true;
         var detalle = _reporteService.TicketReceta(nro.Value);
-        if (detalle is null)
-        {
-            TempData["Warning"] = $"No se encontró la receta Nro. {nro}.";
-            return View((object?)null);
-        }
-        return View(detalle);
+        if (detalle is not null)
+            vm.Datos.Add(detalle);
+
+        return View(vm);
     }
 
     // ── 2. Recetas por estado ─────────────────────────────────────────────
@@ -62,23 +63,39 @@ public class ReportesController : Controller
     }
 
     // ── 3. Recetas archivadas ─────────────────────────────────────────────
-    public IActionResult Archivadas()
+    [HttpGet]
+    public IActionResult Archivadas(DateTime? fechaDesde = null, DateTime? fechaHasta = null)
     {
+        var todas = _reporteService.RecetasArchivadas();
         var vm = new ReporteViewModel
         {
-            TituloReporte = "Recetas archivadas",
-            Datos = _reporteService.RecetasArchivadas()
+            TituloReporte  = "Recetas archivadas",
+            FechaDesde     = fechaDesde,
+            FechaHasta     = fechaHasta,
+            BusquedaRealizada = true,
+            Datos = todas
+                .Where(r => (fechaDesde == null || r.Fecha_Archivo >= fechaDesde)
+                         && (fechaHasta == null || r.Fecha_Archivo <= fechaHasta.Value.AddDays(1)))
+                .ToList()
         };
         return View(vm);
     }
 
     // ── 4. Recetas desechadas ─────────────────────────────────────────────
-    public IActionResult Desechadas()
+    [HttpGet]
+    public IActionResult Desechadas(DateTime? fechaDesde = null, DateTime? fechaHasta = null)
     {
+        var todas = _reporteService.RecetasDesechadas();
         var vm = new ReporteViewModel
         {
-            TituloReporte = "Recetas desechadas",
-            Datos = _reporteService.RecetasDesechadas()
+            TituloReporte  = "Recetas desechadas",
+            FechaDesde     = fechaDesde,
+            FechaHasta     = fechaHasta,
+            BusquedaRealizada = true,
+            Datos = todas
+                .Where(r => (fechaDesde == null || r.Fecha_Desecho >= fechaDesde)
+                         && (fechaHasta == null || r.Fecha_Desecho <= fechaHasta.Value.AddDays(1)))
+                .ToList()
         };
         return View(vm);
     }
