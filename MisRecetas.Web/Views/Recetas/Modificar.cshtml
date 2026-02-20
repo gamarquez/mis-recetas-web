@@ -1,0 +1,63 @@
+﻿@model MisRecetas.Web.ViewModels.ModificarRecetaViewModel
+@{
+    ViewData["Title"] = "Modificar receta";
+}
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-body py-2">
+        <form asp-action="Modificar" method="get" class="d-flex gap-2 align-items-center">
+            <label class="col-form-label fw-semibold small">Nro. receta:</label>
+            <input name="nro" value="@Model.NroRecetaBuscar" class="form-control form-control-sm" style="max-width:140px;" placeholder="Numero" />
+            <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-search me-1"></i>Buscar</button>
+        </form>
+    </div>
+</div>
+@if (Model.RecetaActual is not null)
+{
+    <div class="card border-0 shadow-sm mb-3">
+        <div class="card-header bg-light"><small class="fw-bold text-muted">RECETA ACTUAL - Nro. @Model.RecetaActual.Nro_Receta</small></div>
+        <div class="card-body py-2">
+            <div class="row g-2 small">
+                <div class="col-md-3"><strong>Paciente:</strong> @Model.RecetaActual.PacienteCompleto</div>
+                <div class="col-md-3"><strong>Medico:</strong> @Model.RecetaActual.MedicoCompleto</div>
+                <div class="col-md-3"><strong>Estado:</strong> <span class="badge bg-secondary">@Model.RecetaActual.DescripcionEstado</span></div>
+                <div class="col-md-3"><strong>Registrada:</strong> @Model.RecetaActual.Fecha_Registro?.ToString("dd/MM/yyyy")</div>
+            </div>
+        </div>
+    </div>
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom">
+            <h6 class="mb-0 fw-semibold"><i class="bi bi-pencil-square me-2 text-warning"></i>Modificar datos</h6>
+        </div>
+        <div class="card-body">
+            <form asp-action="Modificar" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="RecetaActual!.Nro_Receta" />
+                <input type="hidden" asp-for="RecetaActual!.Id_Receta" />
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="IdMedico" class="form-label fw-semibold"></label>
+                        <select asp-for="IdMedico" asp-items="Model.ComboMedicos" class="form-select">
+                            <option value="0">- Seleccione medico -</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="IdEstado" class="form-label fw-semibold"></label>
+                        <select asp-for="IdEstado" asp-items="Model.ComboEstados" class="form-select">
+                            <option value="0">- Seleccione estado -</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="alert alert-warning mt-3 py-2 small">
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    <strong>Atencion:</strong> Esta accion modifica directamente la receta sin registrar auditoria adicional.
+                </div>
+                <div class="d-flex gap-2 mt-2">
+                    <button type="submit" class="btn btn-warning" onclick="return confirm('Confirma la modificacion?')">
+                        <i class="bi bi-save me-1"></i>Guardar cambios
+                    </button>
+                    <a asp-action="Modificar" class="btn btn-outline-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+}

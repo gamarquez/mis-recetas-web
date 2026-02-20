@@ -1,0 +1,64 @@
+﻿@model MisRecetas.Web.ViewModels.EntregarAMedicoViewModel
+@{
+    ViewData["Title"] = "Entregar a medico";
+}
+<form asp-action="EntregarAMedico" method="post">
+    @Html.AntiForgeryToken()
+    <div class="card border-0 shadow-sm mb-3">
+        <div class="card-body py-2">
+            <div class="row g-2 align-items-center">
+                <div class="col-auto"><label class="col-form-label fw-semibold small">Filtrar por medico:</label></div>
+                <div class="col-md-4">
+                    <select asp-for="IdMedicoFiltro" asp-items="Model.ComboMedicos" class="form-select form-select-sm"
+                            onchange="this.form.action='/Recetas/EntregarAMedico?idMedico='+this.value; this.form.method='get'; this.form.submit()">
+                    </select>
+                </div>
+                <div class="col-auto ms-auto">
+                    <button type="submit" class="btn btn-primary btn-sm" @(Model.Recetas.Count == 0 ? "disabled" : "")>
+                        <i class="bi bi-arrow-right-circle me-1"></i>Entregar seleccionadas
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <span class="fw-semibold">Recetas pendientes en farmacia <span class="badge bg-secondary ms-1">@Model.Recetas.Count</span></span>
+            @if (Model.Recetas.Count > 0)
+            {
+                <div class="form-check mb-0">
+                    <input class="form-check-input" type="checkbox" id="selectAll"
+                           onclick="document.querySelectorAll('.chk-receta').forEach(c => c.checked = this.checked)" />
+                    <label class="form-check-label small" for="selectAll">Seleccionar todo</label>
+                </div>
+            }
+        </div>
+        <div class="card-body p-0">
+            @if (Model.Recetas.Count == 0)
+            {
+                <div class="text-center py-4 text-muted"><i class="bi bi-inbox fs-3"></i><p class="mt-2 mb-0">No hay recetas pendientes.</p></div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm mb-0">
+                        <thead class="table-light"><tr><th width="40"></th><th>Nro.</th><th>Paciente</th><th>Documento</th><th>Medico</th><th>Fecha registro</th></tr></thead>
+                        <tbody>
+                            @foreach (var r in Model.Recetas)
+                            {
+                                <tr>
+                                    <td><input type="checkbox" name="NrosSeleccionados" value="@r.Nro_Receta" class="form-check-input chk-receta" /></td>
+                                    <td><strong>@r.Nro_Receta</strong></td>
+                                    <td>@r.PacienteCompleto</td>
+                                    <td><small class="text-muted">@r.TipoDocumento: @r.NroDocumento</small></td>
+                                    <td>@r.MedicoCompleto</td>
+                                    <td><small>@r.Fecha_Registro?.ToString("dd/MM/yyyy")</small></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</form>

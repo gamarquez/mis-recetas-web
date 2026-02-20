@@ -1,0 +1,51 @@
+@model MisRecetas.Web.ViewModels.ReporteViewModel
+@{ ViewData["Title"] = "Recetas desechadas"; }
+<style>@@media print { .no-print { display: none !important; } }</style>
+<div class="d-flex justify-content-between align-items-center mb-3 no-print">
+    <div class="d-flex align-items-center">
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm me-3"><i class="bi bi-arrow-left"></i></a>
+        <h4 class="mb-0"><i class="bi bi-trash3 me-2 text-danger"></i>Recetas desechadas</h4>
+    </div>
+    @if (Model.Datos.Any()) { <button class="btn btn-primary btn-sm" onclick="window.print()"><i class="bi bi-printer me-1"></i>Imprimir / Exportar PDF</button> }
+</div>
+<div class="card shadow-sm mb-3 no-print"><div class="card-body py-2">
+    <form asp-action="Desechadas" method="get" class="row g-2 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label small mb-1">Desde</label>
+            <input type="date" name="fechaDesde" value="@(Model.FechaDesde?.ToString("yyyy-MM-dd"))" class="form-control form-control-sm" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small mb-1">Hasta</label>
+            <input type="date" name="fechaHasta" value="@(Model.FechaHasta?.ToString("yyyy-MM-dd"))" class="form-control form-control-sm" />
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-search me-1"></i>Filtrar</button>
+            <a asp-action="Desechadas" class="btn btn-outline-secondary btn-sm ms-1">Limpiar</a>
+        </div>
+    </form>
+</div></div>
+<div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between">
+        <span><strong>Recetas desechadas</strong></span>
+        <span class="badge bg-danger">@Model.Datos.Count registros</span>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-hover table-striped mb-0 small">
+            <thead class="table-dark"><tr>
+                <th>Nro.</th><th>Paciente</th><th>Medico</th><th>Fecha registro</th><th>Fecha desecho</th>
+            </tr></thead>
+            <tbody>
+                @if (!Model.Datos.Any()) { <tr><td colspan="5" class="text-center text-muted py-3">No hay registros.</td></tr> }
+                @foreach (var r in Model.Datos) {
+                    <tr>
+                        <td><strong>@r.Nro_Receta</strong></td>
+                        <td>@r.PacienteCompleto</td>
+                        <td>@r.MedicoCompleto</td>
+                        <td>@r.Fecha_Registro?.ToString("dd/MM/yyyy")</td>
+                        <td>@r.Fecha_Desecho?.ToString("dd/MM/yyyy")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

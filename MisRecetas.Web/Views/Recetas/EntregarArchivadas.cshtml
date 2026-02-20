@@ -1,0 +1,75 @@
+﻿@model MisRecetas.Web.ViewModels.EntregarArchivadasViewModel
+@{
+    ViewData["Title"] = "Entregar recetas archivadas";
+}
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <span class="fw-semibold">Recetas archivadas <span class="badge bg-info text-dark ms-1">@Model.Recetas.Count</span></span>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.Recetas.Count == 0) {
+                    <div class="text-center py-4 text-muted"><i class="bi bi-inbox fs-3"></i><p class="mt-2 mb-0">No hay recetas archivadas.</p></div>
+                } else {
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm mb-0">
+                            <thead class="table-light"><tr><th width="40"></th><th>Nro.</th><th>Paciente</th><th>Medico</th><th>Archivada</th></tr></thead>
+                            <tbody>
+                                @foreach (var r in Model.Recetas) {
+                                    <tr class="selectable-row" data-nro="@r.Nro_Receta" style="cursor:pointer;">
+                                        <td><input type="radio" name="_selReceta" value="@r.Nro_Receta" class="form-check-input" onchange="document.getElementById('NroRecetaSeleccionada').value=this.value" /></td>
+                                        <td><strong>@r.Nro_Receta</strong></td>
+                                        <td>@r.PacienteCompleto</td>
+                                        <td>@r.MedicoCompleto</td>
+                                        <td><small>@r.Fecha_Archivo?.ToString("dd/MM/yyyy")</small></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom">
+                <h6 class="mb-0 fw-semibold"><i class="bi bi-box-arrow-up me-2 text-info"></i>Datos de entrega</h6>
+            </div>
+            <div class="card-body">
+                <form asp-action="EntregarArchivadas" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="NroRecetaSeleccionada" id="NroRecetaSeleccionada" />
+                    <div class="mb-3">
+                        <label asp-for="NombreRetira" class="form-label fw-semibold small"></label>
+                        <input asp-for="NombreRetira" class="form-control" />
+                        <span asp-validation-for="NombreRetira" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Parentezco" class="form-label fw-semibold small"></label>
+                        <select asp-for="Parentezco" class="form-select">
+                            <option value="">- Parentesco -</option>
+                            <option>Paciente</option><option>Conyuge</option><option>Hijo/a</option>
+                            <option>Padre/Madre</option><option>Hermano/a</option><option>Otro familiar</option><option>Acompanante</option>
+                        </select>
+                        <span asp-validation-for="Parentezco" class="text-danger small"></span>
+                    </div>
+                    <button type="submit" class="btn btn-info w-100"><i class="bi bi-check-lg me-1"></i>Confirmar entrega</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        document.querySelectorAll('.selectable-row').forEach(row => {
+            row.addEventListener('click', () => {
+                row.querySelector('input[type=radio]').checked = true;
+                document.getElementById('NroRecetaSeleccionada').value = row.dataset.nro;
+                document.querySelectorAll('.selectable-row').forEach(r => r.classList.remove('table-active'));
+                row.classList.add('table-active');
+            });
+        });
+    </script>
+}

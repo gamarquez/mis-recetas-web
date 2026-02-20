@@ -1,0 +1,61 @@
+@model MisRecetas.Web.ViewModels.ReporteViewModel
+@{ ViewData["Title"] = "Por medico y fecha"; }
+<style>@@media print { .no-print { display: none !important; } }</style>
+<div class="d-flex justify-content-between align-items-center mb-3 no-print">
+    <div class="d-flex align-items-center">
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm me-3"><i class="bi bi-arrow-left"></i></a>
+        <h4 class="mb-0"><i class="bi bi-calendar-range me-2 text-primary"></i>Por medico y fecha</h4>
+    </div>
+    @if (Model.Datos.Any()) { <button class="btn btn-primary btn-sm" onclick="window.print()"><i class="bi bi-printer me-1"></i>Imprimir / Exportar PDF</button> }
+</div>
+<div class="card shadow-sm mb-3 no-print"><div class="card-body py-2">
+    <form asp-action="PorMedicoYFecha" method="get" class="row g-2 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label small mb-1">Medico <span class="text-danger">*</span></label>
+            <select name="idMedico" class="form-select form-select-sm" asp-items="Model.ComboMedicos">
+                <option value="">-- Seleccionar --</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small mb-1">Desde</label>
+            <input type="date" name="fechaDesde" value="@(Model.FechaDesde?.ToString("yyyy-MM-dd"))" class="form-control form-control-sm" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small mb-1">Hasta</label>
+            <input type="date" name="fechaHasta" value="@(Model.FechaHasta?.ToString("yyyy-MM-dd"))" class="form-control form-control-sm" />
+        </div>
+        <div class="col-auto"><button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-search me-1"></i>Buscar</button></div>
+    </form>
+</div></div>
+@if (Model.BusquedaRealizada)
+{
+    <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between">
+            <div>
+                <strong>@Model.TituloReporte</strong>
+                @if (!string.IsNullOrEmpty(Model.SubtituloReporte)) { <small class="text-muted ms-2">@Model.SubtituloReporte</small> }
+            </div>
+            <span class="badge bg-primary">@Model.Datos.Count registros</span>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover table-striped mb-0 small">
+                <thead class="table-dark"><tr>
+                    <th>Nro.</th><th>Paciente</th><th>Estado</th><th>Fecha registro</th><th>Entrega medico</th><th>Recibe de medico</th><th>Entrega paciente</th>
+                </tr></thead>
+                <tbody>
+                    @foreach (var r in Model.Datos) {
+                        <tr>
+                            <td><strong>@r.Nro_Receta</strong></td>
+                            <td>@r.PacienteCompleto</td>
+                            <td><span class="badge bg-secondary">@r.DescripcionEstado</span></td>
+                            <td>@r.Fecha_Registro?.ToString("dd/MM/yyyy")</td>
+                            <td>@r.Fecha_Entrega_Medico?.ToString("dd/MM/yyyy")</td>
+                            <td>@r.Fecha_Recibe_Medico?.ToString("dd/MM/yyyy")</td>
+                            <td>@r.Fecha_Entrega_Paciente?.ToString("dd/MM/yyyy")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

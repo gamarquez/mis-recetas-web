@@ -1,0 +1,50 @@
+@model MisRecetas.Web.ViewModels.ReporteViewModel
+@{ ViewData["Title"] = "Recibidas de medico"; }
+<style>@@media print { .no-print { display: none !important; } }</style>
+<div class="d-flex justify-content-between align-items-center mb-3 no-print">
+    <div class="d-flex align-items-center">
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm me-3"><i class="bi bi-arrow-left"></i></a>
+        <h4 class="mb-0"><i class="bi bi-box-arrow-in-down me-2 text-warning"></i>Recibidas de medico</h4>
+    </div>
+    @if (Model.Datos.Any()) { <button class="btn btn-primary btn-sm" onclick="window.print()"><i class="bi bi-printer me-1"></i>Imprimir / Exportar PDF</button> }
+</div>
+<div class="card shadow-sm mb-3 no-print"><div class="card-body py-2">
+    <form asp-action="RecibidasPorMedico" method="get" class="row g-2 align-items-end">
+        <div class="col-md-5">
+            <label class="form-label small mb-1">Medico</label>
+            <select name="idMedico" class="form-select form-select-sm" asp-items="Model.ComboMedicos">
+                <option value="">-- Todos --</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-search me-1"></i>Filtrar</button>
+            <a asp-action="RecibidasPorMedico" class="btn btn-outline-secondary btn-sm ms-1">Limpiar</a>
+        </div>
+    </form>
+</div></div>
+<div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between">
+        <span><strong>@Model.TituloReporte</strong></span>
+        <span class="badge bg-warning text-dark">@Model.Datos.Count registros</span>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-hover table-striped mb-0 small">
+            <thead class="table-dark"><tr>
+                <th>Nro.</th><th>Paciente</th><th>Medico</th><th>Matricula</th><th>Fecha recepcion del medico</th><th>Dias en estado 3</th>
+            </tr></thead>
+            <tbody>
+                @if (!Model.Datos.Any()) { <tr><td colspan="6" class="text-center text-muted py-3">No hay registros.</td></tr> }
+                @foreach (var r in Model.Datos) {
+                    <tr>
+                        <td><strong>@r.Nro_Receta</strong></td>
+                        <td>@r.PacienteCompleto</td>
+                        <td>@r.MedicoCompleto</td>
+                        <td>@r.NroMatricula</td>
+                        <td>@r.Fecha_Recibe_Medico?.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td><span class="badge @(r.DiasEnEstado3 >= 7 ? "bg-danger" : "bg-secondary")">@r.DiasEnEstado3 d</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

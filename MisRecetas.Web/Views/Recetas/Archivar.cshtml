@@ -1,0 +1,56 @@
+﻿@model MisRecetas.Web.ViewModels.ArchivarRecetasViewModel
+@{
+    ViewData["Title"] = "Archivar recetas";
+}
+<form asp-action="Archivar" method="post">
+    @Html.AntiForgeryToken()
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <div>
+                <span class="fw-semibold">Recetas elegibles para archivar</span>
+                <span class="badge bg-danger ms-1">@Model.Recetas.Count</span>
+                <small class="text-muted ms-2">(Estado 3 con 7+ dias)</small>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                @if (Model.Recetas.Count > 0)
+                {
+                    <div class="form-check mb-0">
+                        <input class="form-check-input" type="checkbox" id="selectAll"
+                               onclick="document.querySelectorAll('.chk-receta').forEach(c => c.checked = this.checked)" />
+                        <label class="form-check-label small" for="selectAll">Seleccionar todo</label>
+                    </div>
+                    <button type="submit" class="btn btn-warning btn-sm">
+                        <i class="bi bi-archive me-1"></i>Archivar seleccionadas
+                    </button>
+                }
+            </div>
+        </div>
+        <div class="card-body p-0">
+            @if (Model.Recetas.Count == 0)
+            {
+                <div class="text-center py-4 text-muted"><i class="bi bi-archive fs-3"></i><p class="mt-2 mb-0">No hay recetas con 7+ dias en espera.</p></div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm mb-0">
+                        <thead class="table-light"><tr><th width="40"></th><th>Nro.</th><th>Paciente</th><th>Medico</th><th>Recibida del medico</th><th>Dias en espera</th></tr></thead>
+                        <tbody>
+                            @foreach (var r in Model.Recetas)
+                            {
+                                <tr>
+                                    <td><input type="checkbox" name="NrosSeleccionados" value="@r.Nro_Receta" class="form-check-input chk-receta" /></td>
+                                    <td><strong>@r.Nro_Receta</strong></td>
+                                    <td>@r.PacienteCompleto</td>
+                                    <td>@r.MedicoCompleto</td>
+                                    <td>@r.Fecha_Recibe_Medico?.ToString("dd/MM/yyyy")</td>
+                                    <td><span class="badge bg-danger">@r.DiasEnEstado3 dias</span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</form>

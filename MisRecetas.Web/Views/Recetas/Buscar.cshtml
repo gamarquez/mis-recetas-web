@@ -1,0 +1,106 @@
+﻿@model MisRecetas.Web.ViewModels.BuscarRecetaViewModel
+@{
+    ViewData["Title"] = "Buscar receta";
+}
+
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-body">
+        <form asp-action="Buscar" method="post">
+            @Html.AntiForgeryToken()
+            <div class="row g-2 align-items-end">
+                <div class="col-sm-3">
+                    <label asp-for="NroReceta" class="form-label fw-semibold small"></label>
+                    <input asp-for="NroReceta" class="form-control form-control-sm" placeholder="Nro. receta" />
+                </div>
+                <div class="col-sm-3">
+                    <label asp-for="Nombre" class="form-label fw-semibold small"></label>
+                    <input asp-for="Nombre" class="form-control form-control-sm" placeholder="Nombre del paciente" />
+                </div>
+                <div class="col-sm-3">
+                    <label asp-for="Apellido" class="form-label fw-semibold small"></label>
+                    <input asp-for="Apellido" class="form-control form-control-sm" placeholder="Apellido del paciente" />
+                </div>
+                <div class="col-sm-2">
+                    <label asp-for="Documento" class="form-label fw-semibold small"></label>
+                    <input asp-for="Documento" class="form-control form-control-sm" placeholder="Nro. documento" />
+                </div>
+                <div class="col-sm-1">
+                    <button type="submit" class="btn btn-primary btn-sm w-100">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model.BusquedaRealizada)
+{
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <span class="fw-semibold">Resultados <span class="badge bg-secondary">@Model.Resultados.Count</span></span>
+        </div>
+        <div class="card-body p-0">
+            @if (Model.Resultados.Count == 0)
+            {
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-inbox fs-3"></i>
+                    <p class="mt-2">No se encontraron recetas.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nro.</th>
+                                <th>Paciente</th>
+                                <th>Documento</th>
+                                <th>Medico</th>
+                                <th>Estado</th>
+                                <th>Fecha registro</th>
+                                <th class="no-print"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var r in Model.Resultados)
+                            {
+                                <tr>
+                                    <td><strong>@r.Nro_Receta</strong></td>
+                                    <td>@r.PacienteCompleto</td>
+                                    <td><small class="text-muted">@r.TipoDocumento: @r.NroDocumento</small></td>
+                                    <td>@r.MedicoCompleto</td>
+                                    <td>
+                                        <span class="badge @BadgeEstado(r.Id_Estado)">@r.DescripcionEstado</span>
+                                    </td>
+                                    <td><small>@r.Fecha_Registro?.ToString("dd/MM/yyyy HH:mm")</small></td>
+                                    <td class="no-print">
+                                        <a asp-controller="Reportes" asp-action="Ticket"
+                                           asp-route-nro="@r.Nro_Receta"
+                                           class="btn btn-outline-secondary btn-sm"
+                                           title="Ver ticket" target="_blank">
+                                            <i class="bi bi-printer"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@functions {
+    string BadgeEstado(int estado) => estado switch {
+        1 => "bg-secondary",
+        2 => "bg-warning text-dark",
+        3 => "bg-success",
+        4 => "bg-primary",
+        5 => "bg-info text-dark",
+        6 => "bg-danger",
+        _ => "bg-dark"
+    };
+}

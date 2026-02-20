@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — MisRecetas</title>
+
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+          crossorigin="anonymous" />
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+          rel="stylesheet" />
+
+    <style>
+        /* ── Sidebar layout ─────────────────────────── */
+        body { display: flex; min-height: 100vh; margin: 0; }
+
+        #sidebar {
+            width: 260px;
+            min-height: 100vh;
+            background: #1a2942;
+            color: #c9d3e0;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #sidebar .sidebar-brand {
+            padding: 1.25rem 1.5rem;
+            background: #111d30;
+            border-bottom: 1px solid #2d3f5a;
+        }
+
+        #sidebar .sidebar-brand h5 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: .5px;
+        }
+
+        #sidebar .sidebar-brand small { color: #7a9bbf; font-size: .75rem; }
+
+        #sidebar .nav-section {
+            padding: .5rem 1rem .2rem;
+            font-size: .68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #4a6785;
+            margin-top: .5rem;
+        }
+
+        #sidebar .nav-link {
+            color: #c9d3e0;
+            padding: .42rem 1.5rem;
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            font-size: .875rem;
+            transition: background .15s, color .15s;
+            text-decoration: none;
+        }
+
+        #sidebar .nav-link:hover,
+        #sidebar .nav-link.active-link {
+            background: #2d3f5a;
+            color: #ffffff;
+        }
+
+        #sidebar .nav-link i { font-size: 1rem; width: 18px; text-align: center; }
+
+        #sidebar .sidebar-footer {
+            margin-top: auto;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #2d3f5a;
+            font-size: .8rem;
+            color: #4a6785;
+        }
+
+        /* ── Main content ───────────────────────────── */
+        #main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f4f6f9;
+            min-width: 0;
+        }
+
+        #topbar {
+            background: #ffffff;
+            border-bottom: 1px solid #dee2e6;
+            padding: .75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        #topbar .topbar-title { font-weight: 600; color: #1a2942; margin: 0; }
+
+        .page-wrapper { padding: 1.5rem; flex: 1; }
+
+        /* ── Print: ocultar UI de navegación ────────── */
+        @@media print {
+            #sidebar, #topbar, .no-print { display: none !important; }
+            #main-content { background: #fff; }
+            .page-wrapper { padding: 0; }
+        }
+    </style>
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <nav id="sidebar">
+        <div class="sidebar-brand">
+            <h5><i class="bi bi-prescription2 me-1"></i>MisRecetas</h5>
+            <small>@User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value</small>
+        </div>
+
+        <ul class="nav flex-column mt-2 pb-2">
+
+            <!-- ── Recetas: todos los roles ── -->
+            <li><span class="nav-section">Recetas</span></li>
+
+            <li class="nav-item">
+                <a asp-controller="Recetas" asp-action="Buscar"
+                   class="nav-link @(IsActive("Recetas","Buscar"))">
+                    <i class="bi bi-search"></i> Buscar receta
+                </a>
+            </li>
+            <li class="nav-item">
+                <a asp-controller="Recetas" asp-action="Registrar"
+                   class="nav-link @(IsActive("Recetas","Registrar"))">
+                    <i class="bi bi-plus-circle"></i> Registrar receta
+                </a>
+            </li>
+            <li class="nav-item">
+                <a asp-controller="Recetas" asp-action="EntregarAMedico"
+                   class="nav-link @(IsActive("Recetas","EntregarAMedico"))">
+                    <i class="bi bi-arrow-right-circle"></i> Entregar a médico
+                </a>
+            </li>
+            <li class="nav-item">
+                <a asp-controller="Recetas" asp-action="RecibirDeMedico"
+                   class="nav-link @(IsActive("Recetas","RecibirDeMedico"))">
+                    <i class="bi bi-arrow-left-circle"></i> Recibir de médico
+                </a>
+            </li>
+            <li class="nav-item">
+                <a asp-controller="Recetas" asp-action="EntregarAPaciente"
+                   class="nav-link @(IsActive("Recetas","EntregarAPaciente"))">
+                    <i class="bi bi-person-check"></i> Entregar a paciente
+                </a>
+            </li>
+
+            <!-- ── Gestión: Admin + Administracion ── -->
+            @if (User.IsInRole("Administrador") || User.IsInRole("Administracion"))
+            {
+                <li><span class="nav-section">Gestión</span></li>
+                <li class="nav-item">
+                    <a asp-controller="Recetas" asp-action="Archivar"
+                       class="nav-link @(IsActive("Recetas","Archivar"))">
+                        <i class="bi bi-archive"></i> Archivar recetas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-controller="Recetas" asp-action="EntregarArchivadas"
+                       class="nav-link @(IsActive("Recetas","EntregarArchivadas"))">
+                        <i class="bi bi-box-arrow-up"></i> Entregar archivadas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-controller="Recetas" asp-action="Desechar"
+                       class="nav-link @(IsActive("Recetas","Desechar"))">
+                        <i class="bi bi-trash3"></i> Desechar recetas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-controller="Medicos" asp-action="Index"
+                       class="nav-link @(IsActive("Medicos",""))">
+                        <i class="bi bi-person-badge"></i> Médicos
+                    </a>
+                </li>
+            }
+
+            <!-- ── Solo Admin ── -->
+            @if (User.IsInRole("Administrador"))
+            {
+                <li><span class="nav-section">Administración</span></li>
+                <li class="nav-item">
+                    <a asp-controller="Usuarios" asp-action="Index"
+                       class="nav-link @(IsActive("Usuarios",""))">
+                        <i class="bi bi-people"></i> Usuarios
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-controller="Recetas" asp-action="Modificar"
+                       class="nav-link @(IsActive("Recetas","Modificar"))">
+                        <i class="bi bi-pencil-square"></i> Modificar receta
+                    </a>
+                </li>
+            }
+
+            <!-- ── Reportes: todos ── -->
+            <li><span class="nav-section">Reportes</span></li>
+            <li class="nav-item">
+                <a asp-controller="Reportes" asp-action="Index"
+                   class="nav-link @(IsActive("Reportes",""))">
+                    <i class="bi bi-file-earmark-bar-graph"></i> Reportes
+                </a>
+            </li>
+
+        </ul>
+
+        <div class="sidebar-footer">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-person-circle fs-5 text-secondary"></i>
+                <div>
+                    <div class="text-white" style="font-size:.8rem;">@User.Identity!.Name</div>
+                    <div>@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</div>
+                </div>
+            </div>
+            <a asp-controller="Account" asp-action="CambiarPassword"
+               class="nav-link ps-0 py-1" style="font-size:.8rem;">
+                <i class="bi bi-key"></i> Cambiar contraseña
+            </a>
+            <form asp-controller="Account" asp-action="Logout" method="post" class="mt-1">
+                @Html.AntiForgeryToken()
+                <button type="submit"
+                        class="btn btn-link nav-link ps-0 py-1"
+                        style="font-size:.8rem; color:#c9d3e0; text-decoration:none;">
+                    <i class="bi bi-box-arrow-left"></i> Cerrar sesión
+                </button>
+            </form>
+        </div>
+    </nav>
+}
+
+<!-- ════ MAIN CONTENT ════ -->
+<div id="main-content">
+
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <div id="topbar">
+            <h6 class="topbar-title">@ViewData["Title"]</h6>
+            <span class="text-muted" style="font-size:.8rem;">
+                <i class="bi bi-clock me-1"></i>@DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+            </span>
+        </div>
+    }
+
+    <div class="page-wrapper">
+
+        @if (TempData["Success"] is string success)
+        {
+            <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 mb-3" role="alert">
+                <i class="bi bi-check-circle-fill flex-shrink-0"></i>
+                <span>@success</span>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @if (TempData["Error"] is string error)
+        {
+            <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 mb-3" role="alert">
+                <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+                <span>@error</span>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @if (TempData["Warning"] is string warning)
+        {
+            <div class="alert alert-warning alert-dismissible fade show d-flex align-items-center gap-2 mb-3" role="alert">
+                <i class="bi bi-exclamation-circle-fill flex-shrink-0"></i>
+                <span>@warning</span>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @RenderBody()
+    </div>
+</div>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc4s9bIOgUxi8T/jzmibHhPmn5n0snhBfQMiJUZoQbQpnFGn"
+        crossorigin="anonymous"></script>
+
+@await RenderSectionAsync("Scripts", required: false)
+
+@functions {
+    string IsActive(string controller, string action)
+    {
+        var currentCtrl = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+        var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+        bool match = string.Equals(currentCtrl, controller, StringComparison.OrdinalIgnoreCase)
+                  && (string.IsNullOrEmpty(action) ||
+                      string.Equals(currentAction, action, StringComparison.OrdinalIgnoreCase));
+        return match ? "active-link" : "";
+    }
+}
+</body>
+</html>

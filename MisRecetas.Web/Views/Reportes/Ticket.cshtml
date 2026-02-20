@@ -1,0 +1,62 @@
+@model MisRecetas.Web.ViewModels.ReporteViewModel
+@{ ViewData["Title"] = "Ticket de receta"; Layout = "_Layout"; }
+<style>@@media print { .no-print { display: none !important; } .card { border: 1px solid #ddd !important; box-shadow: none !important; } }</style>
+<div class="d-flex justify-content-between align-items-center mb-3 no-print">
+    <div class="d-flex align-items-center">
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm me-3"><i class="bi bi-arrow-left"></i></a>
+        <h4 class="mb-0"><i class="bi bi-receipt me-2 text-primary"></i>Ticket de receta</h4>
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="window.print()"><i class="bi bi-printer me-1"></i>Imprimir / Exportar PDF</button>
+</div>
+<div class="card shadow-sm mb-3 no-print"><div class="card-body py-2">
+    <form asp-action="Ticket" method="get" class="row g-2 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label small mb-1">Nro. Receta</label>
+            <input name="nroReceta" value="@Model.NroReceta" class="form-control form-control-sm" placeholder="Numero de receta..." />
+        </div>
+        <div class="col-md-3"><button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-search me-1"></i>Buscar</button></div>
+    </form>
+</div></div>
+@if (Model.Datos.Any())
+{
+    var r = Model.Datos.First();
+    <div class="card shadow-sm">
+        <div class="card-header text-center bg-dark text-white py-3">
+            <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>TICKET DE RECETA</h5>
+            <small>Farmacia Control de Recetas</small>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-6"><div class="border rounded p-3 text-center bg-light">
+                    <div class="text-muted small">Nro. Receta</div>
+                    <div class="fs-1 fw-bold text-primary">@r.Nro_Receta</div>
+                </div></div>
+                <div class="col-6"><div class="border rounded p-3 text-center bg-light">
+                    <div class="text-muted small">Estado</div>
+                    <div class="fs-5 fw-bold text-success mt-1">@r.DescripcionEstado</div>
+                </div></div>
+            </div>
+            <table class="table table-bordered table-sm">
+                <tr class="table-light"><th style="width:35%">Campo</th><th>Valor</th></tr>
+                <tr><td>Paciente</td><td><strong>@r.PacienteCompleto</strong> &nbsp;<small class="text-muted">(@r.TipoDocumento: @r.NroDocumento)</small></td></tr>
+                <tr><td>Medico</td><td>@r.MedicoCompleto &nbsp;<small class="text-muted">(Mat. @r.NroMatricula)</small></td></tr>
+                <tr><td>Fecha registro</td><td>@r.Fecha_Registro?.ToString("dd/MM/yyyy HH:mm")</td></tr>
+                @if (r.Fecha_Entrega_Medico.HasValue) {
+                    <tr><td>Entregada al medico</td><td>@r.Fecha_Entrega_Medico?.ToString("dd/MM/yyyy HH:mm")</td></tr>
+                }
+                @if (r.Fecha_Recibe_Medico.HasValue) {
+                    <tr><td>Recibida del medico</td><td>@r.Fecha_Recibe_Medico?.ToString("dd/MM/yyyy HH:mm")</td></tr>
+                }
+                @if (r.Fecha_Entrega_Paciente.HasValue) {
+                    <tr><td>Entregada al paciente</td><td>@r.Fecha_Entrega_Paciente?.ToString("dd/MM/yyyy HH:mm")</td></tr>
+                    <tr><td>Retira</td><td>@r.Nombre_Retira &nbsp;<small class="text-muted">(@r.Parentezco)</small></td></tr>
+                }
+            </table>
+        </div>
+        <div class="card-footer text-muted small text-center">Impreso el @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</div>
+    </div>
+}
+else if (Model.BusquedaRealizada)
+{
+    <div class="alert alert-warning"><i class="bi bi-exclamation-triangle me-2"></i>No se encontro la receta indicada.</div>
+}

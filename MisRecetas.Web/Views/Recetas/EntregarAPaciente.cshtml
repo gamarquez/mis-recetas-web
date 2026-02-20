@@ -1,0 +1,83 @@
+﻿@model MisRecetas.Web.ViewModels.EntregarAPacienteViewModel
+@{
+    ViewData["Title"] = "Entregar a paciente";
+}
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-bottom">
+                <span class="fw-semibold">Recetas listas para entregar <span class="badge bg-success ms-1">@Model.Recetas.Count</span></span>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.Recetas.Count == 0)
+                {
+                    <div class="text-center py-4 text-muted"><i class="bi bi-inbox fs-3"></i><p class="mt-2 mb-0">No hay recetas listas para entregar.</p></div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm mb-0">
+                            <thead class="table-light"><tr><th width="40"></th><th>Nro.</th><th>Paciente</th><th>Medico</th><th>Recibida</th><th>Dias</th></tr></thead>
+                            <tbody>
+                                @foreach (var r in Model.Recetas)
+                                {
+                                    <tr class="selectable-row" data-nro="@r.Nro_Receta" style="cursor:pointer;">
+                                        <td><input type="radio" name="_selReceta" value="@r.Nro_Receta" class="form-check-input chk-receta" onchange="document.getElementById('NroRecetaSeleccionada').value=this.value" /></td>
+                                        <td><strong>@r.Nro_Receta</strong></td>
+                                        <td>@r.PacienteCompleto</td>
+                                        <td>@r.MedicoCompleto</td>
+                                        <td><small>@r.Fecha_Recibe_Medico?.ToString("dd/MM/yyyy")</small></td>
+                                        <td><span class="badge @(r.DiasEnEstado3 >= 7 ? "bg-danger" : "bg-secondary")">@r.DiasEnEstado3</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom">
+                <h6 class="mb-0 fw-semibold"><i class="bi bi-person-check me-2 text-success"></i>Datos de entrega</h6>
+            </div>
+            <div class="card-body">
+                <form asp-action="EntregarAPaciente" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="NroRecetaSeleccionada" id="NroRecetaSeleccionada" />
+                    <div class="mb-3">
+                        <label asp-for="NombreRetira" class="form-label fw-semibold small"></label>
+                        <input asp-for="NombreRetira" class="form-control" placeholder="Nombre completo de quien retira" />
+                        <span asp-validation-for="NombreRetira" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Parentezco" class="form-label fw-semibold small"></label>
+                        <select asp-for="Parentezco" class="form-select">
+                            <option value="">- Parentesco -</option>
+                            <option>Paciente</option><option>Conyuge</option><option>Hijo/a</option>
+                            <option>Padre/Madre</option><option>Hermano/a</option><option>Otro familiar</option><option>Acompanante</option>
+                        </select>
+                        <span asp-validation-for="Parentezco" class="text-danger small"></span>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100"><i class="bi bi-check-lg me-1"></i>Confirmar entrega</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.querySelectorAll('.selectable-row').forEach(row => {
+            row.addEventListener('click', () => {
+                const nro = row.dataset.nro;
+                const radio = row.querySelector('input[type=radio]');
+                radio.checked = true;
+                document.getElementById('NroRecetaSeleccionada').value = nro;
+                document.querySelectorAll('.selectable-row').forEach(r => r.classList.remove('table-active'));
+                row.classList.add('table-active');
+            });
+        });
+    </script>
+}

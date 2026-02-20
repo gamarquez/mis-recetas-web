@@ -1,0 +1,45 @@
+﻿@model MisRecetas.Web.ViewModels.PacienteViewModel
+@{ ViewData["Title"] = "Nuevo paciente"; }
+<div class="d-flex align-items-center mb-3">
+    <a asp-action="Buscar" class="btn btn-outline-secondary btn-sm me-3"><i class="bi bi-arrow-left"></i></a>
+    <h4 class="mb-0"><i class="bi bi-people me-2 text-primary"></i>Nuevo paciente</h4>
+</div>
+<div class="row justify-content-center"><div class="col-md-7"><div class="card shadow-sm"><div class="card-body">
+<form asp-action="Crear" method="post">
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small"></div>
+    <div class="row g-3">
+        <div class="col-md-5">
+            <label asp-for="Id_TipoDocumento" class="form-label fw-semibold">Tipo documento <span class="text-danger">*</span></label>
+            <select asp-for="Id_TipoDocumento" asp-items="Model.ComboTipoDocumento" class="form-select">
+                <option value="">-- Seleccionar --</option>
+            </select>
+            <span asp-validation-for="Id_TipoDocumento" class="text-danger small"></span>
+        </div>
+        <div class="col-md-7">
+            <label asp-for="Nro_Documento" class="form-label fw-semibold">Nro. Documento <span class="text-danger">*</span></label>
+            <input asp-for="Nro_Documento" class="form-control" />
+            <span asp-validation-for="Nro_Documento" class="text-danger small"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="Nombre_Paciente" class="form-label fw-semibold">Nombre <span class="text-danger">*</span></label>
+            <input asp-for="Nombre_Paciente" class="form-control" />
+            <span asp-validation-for="Nombre_Paciente" class="text-danger small"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="Apellido_Paciente" class="form-label fw-semibold">Apellido <span class="text-danger">*</span></label>
+            <input asp-for="Apellido_Paciente" class="form-control" />
+            <span asp-validation-for="Apellido_Paciente" class="text-danger small"></span>
+        </div>
+        <div class="col-12">
+            <label asp-for="Email" class="form-label fw-semibold">Email</label>
+            <input asp-for="Email" type="email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger small"></span>
+        </div>
+    </div>
+    <div class="d-flex justify-content-end gap-2 mt-4">
+        <a asp-action="Buscar" class="btn btn-outline-secondary">Cancelar</a>
+        <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Guardar</button>
+    </div>
+</form>
+</div></div></div></div>
+@section Scripts { @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); } }
