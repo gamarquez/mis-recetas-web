@@ -1,62 +1,115 @@
 @model MisRecetas.Web.ViewModels.ReporteViewModel
-@{ ViewData["Title"] = "Ticket de receta"; Layout = "_Layout"; }
-<style>@@media print { .no-print { display: none !important; } .card { border: 1px solid #ddd !important; box-shadow: none !important; } }</style>
-<div class="d-flex justify-content-between align-items-center mb-3 no-print">
-    <div class="d-flex align-items-center">
-        <a asp-action="Index" class="btn btn-outline-secondary btn-sm me-3"><i class="bi bi-arrow-left"></i></a>
-        <h4 class="mb-0"><i class="bi bi-receipt me-2 text-primary"></i>Ticket de receta</h4>
-    </div>
-    <button class="btn btn-primary btn-sm" onclick="window.print()"><i class="bi bi-printer me-1"></i>Imprimir / Exportar PDF</button>
-</div>
-<div class="card shadow-sm mb-3 no-print"><div class="card-body py-2">
-    <form asp-action="Ticket" method="get" class="row g-2 align-items-end">
-        <div class="col-md-4">
-            <label class="form-label small mb-1">Nro. Receta</label>
-            <input name="nro" value="@Model.NroReceta" class="form-control form-control-sm" placeholder="Numero de receta..." type="number" min="1" />
-        </div>
-        <div class="col-md-3"><button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-search me-1"></i>Buscar</button></div>
-    </form>
-</div></div>
-@if (Model.Datos.Any())
+@{
+    ViewData["Title"] = "Ticket de receta";
+
+    // Use thermal layout only when we have a valid receipt to display
+    bool tieneReceta = Model.NroReceta != null && Model.Datos.Any();
+    Layout = tieneReceta ? "_ThermalLayout" : "_PopupLayout";
+    if (tieneReceta) ViewData["NroReceta"] = Model.NroReceta;
+}
+
+@if (Model.NroReceta == null)
 {
-    var r = Model.Datos.First();
+    // ── Vista de busqueda (sin numero de receta) ──────────────────────────
     <div class="card shadow-sm">
-        <div class="card-header text-center bg-dark text-white py-3">
-            <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>TICKET DE RECETA</h5>
-            <small>Farmacia Control de Recetas</small>
+        <div class="card-body py-3">
+            <p class="text-muted mb-3 small">Ingrese el numero de receta para ver e imprimir el ticket.</p>
+            <form asp-action="Ticket" method="get" class="row g-2 align-items-end">
+                <div class="col-8">
+                    <label class="form-label small fw-semibold mb-1">Nro. Receta</label>
+                    <input name="nro" class="form-control form-control-sm" placeholder="Ej: 1001" type="number" min="1" autofocus />
+                </div>
+                <div class="col-4">
+                    <button type="submit" class="btn btn-primary btn-sm w-100">
+                        <i class="bi bi-search me-1"></i>Buscar
+                    </button>
+                </div>
+            </form>
         </div>
-        <div class="card-body">
-            <div class="row mb-3">
-                <div class="col-6"><div class="border rounded p-3 text-center bg-light">
-                    <div class="text-muted small">Nro. Receta</div>
-                    <div class="fs-1 fw-bold text-primary">@r.Nro_Receta</div>
-                </div></div>
-                <div class="col-6"><div class="border rounded p-3 text-center bg-light">
-                    <div class="text-muted small">Estado</div>
-                    <div class="fs-5 fw-bold text-success mt-1">@r.DescripcionEstado</div>
-                </div></div>
-            </div>
-            <table class="table table-bordered table-sm">
-                <tr class="table-light"><th style="width:35%">Campo</th><th>Valor</th></tr>
-                <tr><td>Paciente</td><td><strong>@r.PacienteCompleto</strong> &nbsp;<small class="text-muted">(@r.TipoDocumento: @r.NroDocumento)</small></td></tr>
-                <tr><td>Medico</td><td>@r.MedicoCompleto &nbsp;<small class="text-muted">(Mat. @r.NroMatricula)</small></td></tr>
-                <tr><td>Fecha registro</td><td>@r.Fecha_Registro?.ToString("dd/MM/yyyy HH:mm")</td></tr>
-                @if (r.Fecha_Entrega_Medico.HasValue) {
-                    <tr><td>Entregada al medico</td><td>@r.Fecha_Entrega_Medico?.ToString("dd/MM/yyyy HH:mm")</td></tr>
-                }
-                @if (r.Fecha_Recibe_Medico.HasValue) {
-                    <tr><td>Recibida del medico</td><td>@r.Fecha_Recibe_Medico?.ToString("dd/MM/yyyy HH:mm")</td></tr>
-                }
-                @if (r.Fecha_Entrega_Paciente.HasValue) {
-                    <tr><td>Entregada al paciente</td><td>@r.Fecha_Entrega_Paciente?.ToString("dd/MM/yyyy HH:mm")</td></tr>
-                    <tr><td>Retira</td><td>@r.Nombre_Retira &nbsp;<small class="text-muted">(@r.Parentezco)</small></td></tr>
-                }
-            </table>
-        </div>
-        <div class="card-footer text-muted small text-center">Impreso el @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</div>
     </div>
 }
-else if (Model.BusquedaRealizada)
+else if (!Model.Datos.Any())
 {
-    <div class="alert alert-warning"><i class="bi bi-exclamation-triangle me-2"></i>No se encontro la receta indicada.</div>
+    // ── Receta no encontrada ──────────────────────────────────────────────
+    <div class="alert alert-warning mt-3">
+        <i class="bi bi-exclamation-triangle me-2"></i>No se encontro la receta Nro. @Model.NroReceta.
+        <a asp-action="Ticket" class="btn btn-sm btn-outline-secondary ms-3">Volver</a>
+    </div>
+}
+else
+{
+    var r = Model.Datos.First();
+
+    // ════════ TICKET TERMICO ════════
+    <div class="ticket">
+
+        <div class="ticket-header">
+            <div class="logo">Mis Recetas</div>
+            <div class="subtitle">Farmacia Control de Recetas</div>
+        </div>
+
+        <div class="ticket-nro">
+            <div class="label">Nro. Receta</div>
+            <div class="nro">@r.Nro_Receta</div>
+            <div><span class="estado-badge">@r.DescripcionEstado</span></div>
+        </div>
+
+        <hr class="ticket-sep" />
+
+        <div class="ticket-row">
+            <span class="lbl">Paciente:</span>
+            <span class="val">@r.PacienteCompleto</span>
+        </div>
+        <div class="ticket-row">
+            <span class="lbl">Doc.:</span>
+            <span class="val">@r.TipoDocumento @r.NroDocumento</span>
+        </div>
+
+        <hr class="ticket-sep" />
+
+        <div class="ticket-row">
+            <span class="lbl">Medico:</span>
+            <span class="val">@r.MedicoCompleto</span>
+        </div>
+        <div class="ticket-row">
+            <span class="lbl">Matricula:</span>
+            <span class="val">@r.NroMatricula</span>
+        </div>
+
+        <hr class="ticket-sep" />
+
+        <div class="ticket-row">
+            <span class="lbl">Registro:</span>
+            <span class="val">@r.Fecha_Registro?.ToString("dd/MM/yyyy HH:mm")</span>
+        </div>
+        @if (r.Fecha_Entrega_Medico.HasValue)
+        {
+            <div class="ticket-row">
+                <span class="lbl">Ent.Medico:</span>
+                <span class="val">@r.Fecha_Entrega_Medico?.ToString("dd/MM/yyyy HH:mm")</span>
+            </div>
+        }
+        @if (r.Fecha_Recibe_Medico.HasValue)
+        {
+            <div class="ticket-row">
+                <span class="lbl">Rec.Medico:</span>
+                <span class="val">@r.Fecha_Recibe_Medico?.ToString("dd/MM/yyyy HH:mm")</span>
+            </div>
+        }
+        @if (r.Fecha_Entrega_Paciente.HasValue)
+        {
+            <div class="ticket-row">
+                <span class="lbl">Ent.Paciente:</span>
+                <span class="val">@r.Fecha_Entrega_Paciente?.ToString("dd/MM/yyyy HH:mm")</span>
+            </div>
+            <div class="ticket-row">
+                <span class="lbl">Retira:</span>
+                <span class="val">@r.Nombre_Retira (@r.Parentezco)</span>
+            </div>
+        }
+
+        <div class="ticket-footer">
+            Impreso: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+        </div>
+    </div>
 }

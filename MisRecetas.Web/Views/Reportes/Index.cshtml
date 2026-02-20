@@ -1,46 +1,106 @@
-﻿@{ ViewData["Title"] = "Reportes"; }
+@{ ViewData["Title"] = "Reportes"; }
+
 <h4 class="mb-4"><i class="bi bi-bar-chart me-2 text-primary"></i>Reportes disponibles</h4>
+
 <div class="row g-3">
-    <div class="col-md-4"><div class="card h-100 shadow-sm border-0"><div class="card-body text-center py-4">
-        <i class="bi bi-receipt fs-1 text-primary mb-3 d-block"></i>
-        <h6 class="fw-bold">Ticket de receta</h6>
-        <p class="text-muted small">Imprime el ticket de entrega de una receta individual</p>
-        <a asp-action="Ticket" class="btn btn-outline-primary btn-sm">Ver reporte</a>
-    </div></div></div>
-    <div class="col-md-4"><div class="card h-100 shadow-sm border-0"><div class="card-body text-center py-4">
-        <i class="bi bi-filter-square fs-1 text-info mb-3 d-block"></i>
-        <h6 class="fw-bold">Por estado</h6>
-        <p class="text-muted small">Lista de recetas filtradas por estado</p>
-        <a asp-action="PorEstado" class="btn btn-outline-info btn-sm">Ver reporte</a>
-    </div></div></div>
-    <div class="col-md-4"><div class="card h-100 shadow-sm border-0"><div class="card-body text-center py-4">
-        <i class="bi bi-archive fs-1 text-secondary mb-3 d-block"></i>
-        <h6 class="fw-bold">Archivadas</h6>
-        <p class="text-muted small">Recetas en estado Archivado (5)</p>
-        <a asp-action="Archivadas" class="btn btn-outline-secondary btn-sm">Ver reporte</a>
-    </div></div></div>
-    <div class="col-md-4"><div class="card h-100 shadow-sm border-0"><div class="card-body text-center py-4">
-        <i class="bi bi-trash3 fs-1 text-danger mb-3 d-block"></i>
-        <h6 class="fw-bold">Desechadas</h6>
-        <p class="text-muted small">Recetas en estado Desechado (6)</p>
-        <a asp-action="Desechadas" class="btn btn-outline-danger btn-sm">Ver reporte</a>
-    </div></div></div>
-    <div class="col-md-4"><div class="card h-100 shadow-sm border-0"><div class="card-body text-center py-4">
-        <i class="bi bi-person-badge fs-1 text-success mb-3 d-block"></i>
-        <h6 class="fw-bold">Entregadas por medico</h6>
-        <p class="text-muted small">Recetas entregadas a un medico (estado 2)</p>
-        <a asp-action="EntregadasPorMedico" class="btn btn-outline-success btn-sm">Ver reporte</a>
-    </div></div></div>
-    <div class="col-md-4"><div class="card h-100 shadow-sm border-0"><div class="card-body text-center py-4">
-        <i class="bi bi-box-arrow-in-down fs-1 text-warning mb-3 d-block"></i>
-        <h6 class="fw-bold">Recibidas de medico</h6>
-        <p class="text-muted small">Recetas recibidas de medico (estado 3)</p>
-        <a asp-action="RecibidasPorMedico" class="btn btn-outline-warning btn-sm">Ver reporte</a>
-    </div></div></div>
-    <div class="col-md-4"><div class="card h-100 shadow-sm border-0"><div class="card-body text-center py-4">
-        <i class="bi bi-calendar-range fs-1 text-primary mb-3 d-block"></i>
-        <h6 class="fw-bold">Por medico y fecha</h6>
-        <p class="text-muted small">Todas las recetas de un medico en un rango de fechas</p>
-        <a asp-action="PorMedicoYFecha" class="btn btn-outline-primary btn-sm">Ver reporte</a>
-    </div></div></div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-body text-center py-4">
+                <i class="bi bi-receipt fs-1 text-primary mb-3 d-block"></i>
+                <h6 class="fw-bold">Ticket de receta</h6>
+                <p class="text-muted small">Imprime el ticket de entrega en formato termico</p>
+                <button class="btn btn-outline-primary btn-sm" onclick="abrirReporte('@Url.Action("Ticket", "Reportes")', 380, 620)">
+                    <i class="bi bi-printer me-1"></i>Abrir ticket
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-body text-center py-4">
+                <i class="bi bi-filter-square fs-1 text-info mb-3 d-block"></i>
+                <h6 class="fw-bold">Por estado</h6>
+                <p class="text-muted small">Lista de recetas filtradas por estado</p>
+                <button class="btn btn-outline-info btn-sm" onclick="abrirReporte('@Url.Action("PorEstado", "Reportes")', 900, 600)">
+                    <i class="bi bi-bar-chart me-1"></i>Ver reporte
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-body text-center py-4">
+                <i class="bi bi-archive fs-1 text-secondary mb-3 d-block"></i>
+                <h6 class="fw-bold">Archivadas</h6>
+                <p class="text-muted small">Recetas en estado Archivado (5)</p>
+                <button class="btn btn-outline-secondary btn-sm" onclick="abrirReporte('@Url.Action("Archivadas", "Reportes")', 1000, 600)">
+                    <i class="bi bi-bar-chart me-1"></i>Ver reporte
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-body text-center py-4">
+                <i class="bi bi-trash3 fs-1 text-danger mb-3 d-block"></i>
+                <h6 class="fw-bold">Desechadas</h6>
+                <p class="text-muted small">Recetas en estado Desechado (6)</p>
+                <button class="btn btn-outline-danger btn-sm" onclick="abrirReporte('@Url.Action("Desechadas", "Reportes")', 900, 600)">
+                    <i class="bi bi-bar-chart me-1"></i>Ver reporte
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-body text-center py-4">
+                <i class="bi bi-person-badge fs-1 text-success mb-3 d-block"></i>
+                <h6 class="fw-bold">Entregadas por medico</h6>
+                <p class="text-muted small">Recetas entregadas a un medico (estado 2)</p>
+                <button class="btn btn-outline-success btn-sm" onclick="abrirReporte('@Url.Action("EntregadasPorMedico", "Reportes")', 950, 600)">
+                    <i class="bi bi-bar-chart me-1"></i>Ver reporte
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-body text-center py-4">
+                <i class="bi bi-box-arrow-in-down fs-1 text-warning mb-3 d-block"></i>
+                <h6 class="fw-bold">Recibidas de medico</h6>
+                <p class="text-muted small">Recetas recibidas de medico (estado 3)</p>
+                <button class="btn btn-outline-warning btn-sm" onclick="abrirReporte('@Url.Action("RecibidasPorMedico", "Reportes")', 950, 600)">
+                    <i class="bi bi-bar-chart me-1"></i>Ver reporte
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-body text-center py-4">
+                <i class="bi bi-calendar-range fs-1 text-primary mb-3 d-block"></i>
+                <h6 class="fw-bold">Por medico y fecha</h6>
+                <p class="text-muted small">Todas las recetas de un medico en un rango de fechas</p>
+                <button class="btn btn-outline-primary btn-sm" onclick="abrirReporte('@Url.Action("PorMedicoYFecha", "Reportes")', 1050, 600)">
+                    <i class="bi bi-bar-chart me-1"></i>Ver reporte
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+<script>
+    function abrirReporte(url, ancho, alto) {
+        var left = Math.round((screen.width - ancho) / 2);
+        var top  = Math.round((screen.height - alto)  / 2);
+        window.open(
+            url,
+            'reporte',
+            'width=' + ancho + ',height=' + alto +
+            ',left=' + left + ',top=' + top +
+            ',resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,status=no'
+        );
+    }
+</script>
+}

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ticket #@ViewData["NroReceta"] - MisRecetas</title>
+    <style>
+        /* ── Pantalla ──────────────────────────────────────────── */
+        body {
+            background: #e9ecef;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 16px;
+        }
+
+        .screen-toolbar {
+            width: 302px;
+            background: #1a2942;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px 6px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: .8rem;
+        }
+
+        /* ── Ticket 80mm (≈ 302px a 96dpi) ───────────────────── */
+        .ticket {
+            width: 302px;
+            background: white;
+            padding: 12px 14px;
+            border: 1px solid #ccc;
+            border-top: none;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .ticket-header {
+            text-align: center;
+            border-bottom: 1px dashed #333;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+        }
+
+        .ticket-header .logo {
+            font-size: 14px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .ticket-header .subtitle {
+            font-size: 10px;
+            color: #555;
+        }
+
+        .ticket-nro {
+            text-align: center;
+            margin: 8px 0;
+        }
+
+        .ticket-nro .label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #555;
+        }
+
+        .ticket-nro .nro {
+            font-size: 42px;
+            font-weight: bold;
+            line-height: 1.1;
+        }
+
+        .ticket-sep {
+            border: none;
+            border-top: 1px dashed #333;
+            margin: 8px 0;
+        }
+
+        .ticket-row {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 3px;
+            font-size: 11px;
+        }
+
+        .ticket-row .lbl {
+            font-weight: bold;
+            min-width: 70px;
+            flex-shrink: 0;
+        }
+
+        .ticket-row .val {
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .ticket-footer {
+            text-align: center;
+            border-top: 1px dashed #333;
+            margin-top: 8px;
+            padding-top: 6px;
+            font-size: 9px;
+            color: #666;
+        }
+
+        .estado-badge {
+            display: inline-block;
+            border: 1px solid #333;
+            padding: 1px 6px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ── Impresion: solo el ticket ─────────────────────────── */
+        @@media print {
+            body {
+                background: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .screen-toolbar { display: none !important; }
+
+            /* papel termico 80mm */
+            .ticket {
+                width: 72mm;
+                border: none;
+                padding: 4mm 4mm;
+                font-size: 9pt;
+            }
+
+            .ticket-nro .nro { font-size: 32pt; }
+        }
+    </style>
+</head>
+<body>
+    <div class="screen-toolbar no-print">
+        <span><i>&#128438;</i> Ticket de receta</span>
+        <div style="display:flex;gap:6px;">
+            <button onclick="window.print()" style="background:#0d6efd;color:white;border:none;border-radius:4px;padding:3px 10px;cursor:pointer;font-size:11px;">
+                &#128438; Imprimir
+            </button>
+            <button onclick="window.close()" style="background:#6c757d;color:white;border:none;border-radius:4px;padding:3px 10px;cursor:pointer;font-size:11px;">
+                ✕ Cerrar
+            </button>
+        </div>
+    </div>
+    @RenderBody()
+</body>
+</html>

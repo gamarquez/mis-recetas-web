@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MisRecetas</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        body { background: #f8f9fa; }
+        .popup-toolbar {
+            background: #1a2942;
+            color: white;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .popup-toolbar .title { font-weight: 600; font-size: .95rem; }
+        .popup-content { padding: 16px; }
+        @@media print {
+            .popup-toolbar { display: none !important; }
+            .popup-content { padding: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="popup-toolbar no-print">
+        <span class="title"><i class="bi bi-bar-chart me-2"></i>@ViewData["Title"]</span>
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-light" onclick="window.print()">
+                <i class="bi bi-printer me-1"></i>Imprimir
+            </button>
+            <button class="btn btn-sm btn-outline-light" onclick="window.close()">
+                <i class="bi bi-x-lg me-1"></i>Cerrar
+            </button>
+        </div>
+    </div>
+    <div class="popup-content">
+        @RenderBody()
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
