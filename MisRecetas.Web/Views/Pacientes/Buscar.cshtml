@@ -1,0 +1,83 @@
+@model List<MisRecetas.Web.Models.Paciente>
+@{
+    ViewData["Title"] = "Pacientes";
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0"><i class="bi bi-people me-2 text-primary"></i>Pacientes</h4>
+    <a asp-action="Crear" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle me-1"></i>Nuevo paciente</a>
+</div>
+
+@if (TempData["Success"] is string ok)
+{
+    <div class="alert alert-success alert-dismissible fade show py-2" role="alert">
+        <i class="bi bi-check-circle me-1"></i>@ok
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card shadow-sm mb-3">
+    <div class="card-body py-2">
+        <form asp-action="Buscar" method="get" class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label small mb-1">Nombre</label>
+                <input name="nombre" value="@ViewBag.Nombre" class="form-control form-control-sm" placeholder="Buscar por nombre..." />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small mb-1">Apellido</label>
+                <input name="apellido" value="@ViewBag.Apellido" class="form-control form-control-sm" placeholder="Buscar por apellido..." />
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary btn-sm me-1"><i class="bi bi-search me-1"></i>Buscar</button>
+                <a asp-action="Buscar" class="btn btn-outline-secondary btn-sm">Limpiar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (ViewBag.Nombre != null || ViewBag.Apellido != null)
+{
+    <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span class="fw-semibold small">Resultados de busqueda</span>
+            <span class="badge bg-secondary">@Model.Count encontrados</span>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover table-striped mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Documento</th><th>Apellido</th><th>Nombre</th><th>Email</th>
+                        <th class="text-end pe-3">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr><td colspan="5" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-4 d-block mb-1"></i>No se encontraron pacientes.
+                        </td></tr>
+                    }
+                    @foreach (var p in Model)
+                    {
+                        <tr>
+                            <td><span class="badge bg-secondary">@p.DescripcionTipoDocumento</span> @p.Nro_Documento</td>
+                            <td>@p.Apellido_Paciente</td>
+                            <td>@p.Nombre_Paciente</td>
+                            <td><small class="text-muted">@p.Email</small></td>
+                            <td class="text-end pe-2">
+                                <a asp-action="Editar" asp-route-id="@p.Id_Paciente" class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-pencil me-1"></i>Editar
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-info py-2">
+        <i class="bi bi-info-circle me-2"></i>Ingrese nombre y/o apellido para buscar pacientes.
+    </div>
+}
